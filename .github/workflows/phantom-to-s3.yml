@@ -1,0 +1,29 @@
+name: PhantomBuster to S3 Sync
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Every hour
+  workflow_dispatch:  # Allow manual trigger from GitHub UI
+
+jobs:
+  sync-to-s3:
+    runs-on: ubuntu-latest
+
+    env:
+      PHANTOMBUSTER_API_KEY: ${{ secrets.PHANTOMBUSTER_API_KEY }}
+      PHANTOM_RUN_ID: ${{ secrets.PHANTOM_RUN_ID }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: 'your-aws-region'
+      S3_BUCKET: 'your-s3-bucket-name'
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: pip install requests boto3
+
+    - name: Fetch PhantomBuster data and upload to S3
+      run: |
+        python scripts/upload_to_s3.py
